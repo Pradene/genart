@@ -49,7 +49,16 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::RedrawRequested => {
+                if let Some(renderer) = &mut self.renderer {
+                    renderer.render();
+                }
+
                 self.window.as_ref().unwrap().request_redraw();
+            }
+            WindowEvent::Resized(new_size) => {
+                if let Some(renderer) = &mut self.renderer {
+                    pollster::block_on(renderer.resize(new_size.width, new_size.height))
+                }
             }
             _ => {}
         }
